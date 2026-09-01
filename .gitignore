@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# App data (never commit real financial data)
+data/*.db
+data/*.db-journal
+
+# Buildozer / python-for-android build artifacts (large, machine-specific)
+.buildozer/
+bin/
+.pyoyi/
+
+# Editor
+.vscode/
+.idea/
