@@ -7,7 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Pinned to a specific Ubuntu LTS version, not "ubuntu-latest" -- floating onto
+    # whatever Ubuntu ships next is exactly what broke the previous Docker-based
+    # build (a third-party PPA hadn't caught up with a brand-new Ubuntu codename).
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,18 +20,40 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Runs the whole Android SDK/NDK toolchain + buildozer inside GitHub's
-      # cloud runner -- nothing needs to be installed on your own machine.
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      # Installed via GitHub's own action (Temurin builds), not an apt PPA --
+      # avoids depending on any third party keeping pace with Ubuntu releases.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          command: buildozer android debug
-          workdir: .
-          buildozer_version: stable
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install system build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config \
+            zlib1g-dev libncurses-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev \
+            build-essential
+
+      - name: Install buildozer
+        run: pip install --upgrade pip "Cython==0.29.33" buildozer
+
+      # Caches the Android SDK/NDK download + compiled recipes across runs so
+      # repeat builds after this first one take minutes, not tens of minutes.
+      - name: Cache buildozer downloads and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.buildozer
+            .buildozer
+          key: buildozer-${{ hashFiles('buildozer.spec') }}
+          restore-keys: buildozer-
+
+      - name: Build APK
+        run: buildozer -v android debug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: canopy-finance-debug-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk

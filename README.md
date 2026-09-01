@@ -86,8 +86,13 @@ pytest -v
 
 **Recommended: GitHub Actions (no local Android SDK/NDK setup at all).**
 A ready-to-run workflow is already in this project at
-`.github/workflows/build-apk.yml`. It builds the APK entirely on GitHub's
-cloud runners using the [buildozer-action](https://github.com/ArtemSBulgakov/buildozer-action).
+`.github/workflows/build-apk.yml`. It installs buildozer directly on GitHub's
+own pinned `ubuntu-22.04` runner and runs `buildozer android debug` there --
+deliberately not routed through a third-party Docker-based action, after an
+early version of this workflow broke when that action's floating
+`ghcr.io/kivy/buildozer:latest` image picked up a brand-new Ubuntu release
+faster than its Java PPA could keep up. Building straight on GitHub's own
+runner avoids depending on anyone else's moving-target base image.
 
 ```powershell
 # from inside canopy_finance/ (make this folder itself the repo root)
