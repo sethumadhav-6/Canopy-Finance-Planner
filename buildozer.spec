@@ -28,6 +28,11 @@ android.api = 34
 android.minapi = 24
 android.ndk = 25b
 android.archs = arm64-v8a, armeabi-v7a
+# Pinned explicitly: some newer auto-selected build-tools releases have been
+# reported to omit the standalone `aidl` binary python-for-android needs,
+# which surfaces as "Aidl not found, please install it." during the build.
+# 33.0.2 is a widely-used, known-good version that still ships it.
+android.build_tools_version = 33.0.2
 android.allow_backup = False
 
 [buildozer]

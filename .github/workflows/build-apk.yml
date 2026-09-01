@@ -34,6 +34,12 @@ jobs:
           sudo apt-get install -y git zip unzip autoconf libtool pkg-config \
             zlib1g-dev libncurses-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev \
             build-essential
+          # aidl (an Android build-tools binary python-for-android needs) is a 32-bit
+          # executable -- on a 64-bit runner it silently fails to run without these
+          # i386 compatibility libs, which p4a then reports as "Aidl not found".
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y libc6:i386 libstdc++6:i386 libncurses5:i386 zlib1g:i386
 
       - name: Install buildozer
         run: pip install --upgrade pip "Cython==0.29.33" buildozer
