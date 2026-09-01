@@ -33,6 +33,13 @@ android.archs = arm64-v8a, armeabi-v7a
 # which surfaces as "Aidl not found, please install it." during the build.
 # 33.0.2 is a widely-used, known-good version that still ships it.
 android.build_tools_version = 33.0.2
+
+# Auto-accept the Android SDK license agreements. Without this, sdkmanager
+# prompts "Accept? (y/N)" during the build, which no one is there to answer
+# in CI -- it silently defaults to "no", build-tools never actually gets
+# installed, and the build fails downstream with a confusing "Aidl not
+# found" (aidl lives inside build-tools, which was never there).
+android.accept_sdk_license = True
 android.allow_backup = False
 
 [buildozer]
