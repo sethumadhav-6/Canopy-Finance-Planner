@@ -10,7 +10,7 @@ version = 0.1.0-trial
 
 # NOTE: buildozer resolves these from PyPI/its own recipes at build time -- this
 # list is independent from requirements.txt (which is for desktop pip installs).
-requirements = python3,kivy==2.4.0,kivymd==1.2.0,sqlite3,pyjnius,plyer
+requirements = python3,kivy==2.3.1,kivymd==1.2.0,sqlite3,pyjnius,plyer
 
 icon.filename = %(source.dir)s/assets/icons/app_icon.png
 orientation = portrait
